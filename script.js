@@ -1,11 +1,16 @@
 /* ==========================================================================
-   PARTICLE CANVAS BACKGROUND (FAIRY DUST & HEARTS)
+   PARTICLE CANVAS BACKGROUND (FAIRY DUST STARS & HEARTS WITH CURSOR REACTION)
    ========================================================================== */
 const canvas = document.getElementById('particle-canvas');
 const ctx = canvas.getContext('2d');
 
 let particles = [];
-const particleCount = 28; // slightly more for rich fairy dust texture
+const particleCount = 35; // rich fairy dust count
+
+let mouseX = 0;
+let mouseY = 0;
+let targetMouseX = 0;
+let targetMouseY = 0;
 
 function resizeCanvas() {
     canvas.width = window.innerWidth;
@@ -14,6 +19,21 @@ function resizeCanvas() {
 window.addEventListener('resize', resizeCanvas);
 resizeCanvas();
 
+// Catch cursor movement for soft parallax physics
+document.addEventListener('mousemove', (e) => {
+    targetMouseX = (e.clientX - window.innerWidth / 2) * 0.05;
+    targetMouseY = (e.clientY - window.innerHeight / 2) * 0.05;
+    
+    // Parallax background glows
+    const glow1 = document.querySelector('.glow-1');
+    const glow2 = document.querySelector('.glow-2');
+    const glow3 = document.querySelector('.glow-3');
+    
+    if (glow1) glow1.style.transform = `translate(${targetMouseX}px, ${targetMouseY}px)`;
+    if (glow2) glow2.style.transform = `translate(${-targetMouseX}px, ${-targetMouseY}px)`;
+    if (glow3) glow3.style.transform = `translate(${targetMouseX * 0.5}px, ${-targetMouseY * 0.5}px)`;
+});
+
 class MagicParticle {
     constructor() {
         this.reset(true);
@@ -21,38 +41,43 @@ class MagicParticle {
 
     reset(initialSetup = false) {
         this.x = Math.random() * canvas.width;
-        this.y = initialSetup ? Math.random() * canvas.height : canvas.height + 20;
-        this.type = Math.random() > 0.45 ? 'sparkle' : 'heart'; // fairy dust mixed with hearts
+        this.y = initialSetup ? Math.random() * canvas.height : canvas.height + 25;
+        this.type = Math.random() > 0.4 ? 'sparkle' : 'heart'; // fairy dust mixed with hearts
         
         if (this.type === 'heart') {
-            this.size = Math.random() * 10 + 6;
-            this.speedY = Math.random() * 0.7 + 0.3;
+            this.size = Math.random() * 8 + 5;
+            this.speedY = Math.random() * 0.6 + 0.3;
             this.color = '#ff8fa4';
         } else {
-            this.size = Math.random() * 3 + 1.5;
+            this.size = Math.random() * 2.2 + 1.2;
             this.speedY = Math.random() * 0.5 + 0.2;
-            this.color = Math.random() > 0.5 ? '#ffeaa7' : '#ffffff'; // gold & white sparkles
+            this.color = Math.random() > 0.45 ? '#f9d976' : '#ffffff'; // gold & white sparkles
         }
         
-        this.opacity = Math.random() * 0.4 + 0.2;
+        this.opacity = Math.random() * 0.45 + 0.2;
         this.maxOpacity = this.opacity;
-        this.wiggle = Math.random() * 0.015;
-        this.wiggleSpeed = Math.random() * 0.02;
-        this.twinkleRate = Math.random() * 0.01 + 0.005;
+        this.wiggle = Math.random() * 0.012;
+        this.wiggleSpeed = Math.random() * 0.015;
+        this.twinkleRate = Math.random() * 0.008 + 0.004;
     }
 
     update() {
         this.y -= this.speedY;
-        this.x += Math.sin(this.y * this.wiggle) * 0.35;
+        
+        // Add subtle mouse-drag pull to particles
+        mouseX += (targetMouseX - mouseX) * 0.1;
+        mouseY += (targetMouseY - mouseY) * 0.1;
+        
+        this.x += Math.sin(this.y * this.wiggle) * 0.35 + (mouseX * 0.03);
         
         // Twinkling effect
         if (this.type === 'sparkle') {
             this.opacity = Math.abs(Math.sin(this.y * this.twinkleRate)) * this.maxOpacity;
         } else {
-            this.opacity -= 0.0003;
+            this.opacity -= 0.00025;
         }
 
-        if (this.y < -20 || this.opacity <= 0) {
+        if (this.y < -30 || this.opacity <= 0) {
             this.reset();
         }
     }
@@ -60,9 +85,9 @@ class MagicParticle {
     draw() {
         ctx.save();
         ctx.globalAlpha = this.opacity;
-        ctx.fillStyle = this.color;
         
         if (this.type === 'heart') {
+            ctx.fillStyle = this.color;
             ctx.beginPath();
             const topCurveHeight = this.size * 0.3;
             ctx.moveTo(this.x, this.y + topCurveHeight);
@@ -81,9 +106,34 @@ class MagicParticle {
             );
             ctx.fill();
         } else {
-            // Draw Sparkle (Twinkling Soft Dot with a glow aura)
+            // Draw Sparkle Star (Twinkling Soft 4-pointed Star)
+            const cx = this.x;
+            const cy = this.y;
+            const spikes = 4;
+            const outerRadius = this.size * 2.2;
+            const innerRadius = this.size * 0.55;
+            
+            let rot = Math.PI / 2 * 3;
+            let x = cx;
+            let y = cy;
+            let step = Math.PI / spikes;
+
+            ctx.fillStyle = this.color;
             ctx.beginPath();
-            ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+            ctx.moveTo(cx, cy - outerRadius)
+            for (let i = 0; i < spikes; i++) {
+                x = cx + Math.cos(rot) * outerRadius;
+                y = cy + Math.sin(rot) * outerRadius;
+                ctx.lineTo(x, y);
+                rot += step;
+
+                x = cx + Math.cos(rot) * innerRadius;
+                y = cy + Math.sin(rot) * innerRadius;
+                ctx.lineTo(x, y);
+                rot += step;
+            }
+            ctx.lineTo(cx, cy - outerRadius);
+            ctx.closePath();
             ctx.shadowColor = this.color;
             ctx.shadowBlur = 8;
             ctx.fill();
@@ -109,56 +159,52 @@ animateParticles();
 
 
 /* ==========================================================================
-   WEB AUDIO API SYNTHESIZER (MUSIC BOX)
+   WEB AUDIO API SYNTHESIZER (MUSIC BOX & CANTON SOUND PUFFS)
    ========================================================================== */
 let audioCtx = null;
 let synthTimer = null;
 let isPlaying = false;
-let currentTempo = 105; // Slightly slower, gentler tempo
+let currentTempo = 105; 
 let beatTime = 60 / currentTempo;
 
 // Chords Sequence: Cmaj9 -> Am9 -> Fmaj7 -> G7sus4 (Music Box Plucks)
 const chordProgression = [
-    // Cmaj9: C3, G3, E4, B4, D5
     [130.81, 196.00, 329.63, 493.88, 587.33],
-    // Am9: A2, E3, C4, G4, B4
     [110.00, 164.81, 261.63, 392.00, 493.88],
-    // Fmaj7: F2, C3, A3, E4, G4
     [87.31, 130.81, 220.00, 329.63, 392.00],
-    // G7sus4/G7: G2, D3, G3, C4, F4 -> B4
     [98.00, 146.83, 196.00, 261.63, 349.23]
 ];
 
 // Happy Birthday Melody
 const happyBirthdayMelody = [
-    [392.00, 0.75, 0.25], // Happy
-    [392.00, 0.25, 0.05], // birth-
-    [440.00, 1.00, 0.10], // day
-    [392.00, 1.00, 0.10], // to
-    [523.25, 1.00, 0.10], // you
-    [493.88, 2.00, 0.20], // ---
+    [392.00, 0.75, 0.25], 
+    [392.00, 0.25, 0.05], 
+    [440.00, 1.00, 0.10], 
+    [392.00, 1.00, 0.10], 
+    [523.25, 1.00, 0.10], 
+    [493.88, 2.00, 0.20], 
 
-    [392.00, 0.75, 0.25], // Happy
-    [392.00, 0.25, 0.05], // birth-
-    [440.00, 1.00, 0.10], // day
-    [392.00, 1.00, 0.10], // to
-    [587.33, 1.00, 0.10], // you
-    [523.25, 2.00, 0.20], // ---
+    [392.00, 0.75, 0.25], 
+    [392.00, 0.25, 0.05], 
+    [440.00, 1.00, 0.10], 
+    [392.00, 1.00, 0.10], 
+    [587.33, 1.00, 0.10], 
+    [523.25, 2.00, 0.20], 
 
-    [392.00, 0.75, 0.25], // Happy
-    [392.00, 0.25, 0.05], // birth-
-    [783.99, 1.00, 0.10], // day
-    [659.25, 1.00, 0.10], // dear
-    [523.25, 1.00, 0.10], // crush
-    [493.88, 1.00, 0.10], // (name)
-    [440.00, 2.00, 0.20], // ---
+    [392.00, 0.75, 0.25], 
+    [392.00, 0.25, 0.05], 
+    [783.99, 1.00, 0.10], 
+    [659.25, 1.00, 0.10], 
+    [523.25, 1.00, 0.10], 
+    [493.88, 1.00, 0.10], 
+    [440.00, 2.00, 0.20], 
 
-    [698.46, 0.75, 0.25], // Hap-
-    [698.46, 0.25, 0.05], // py
-    [659.25, 1.00, 0.10], // birth-
-    [523.25, 1.00, 0.10], // day
-    [587.33, 1.00, 0.10], // to
-    [523.25, 2.50, 0.50]  // you
+    [698.46, 0.75, 0.25], 
+    [698.46, 0.25, 0.05], 
+    [659.25, 1.00, 0.10], 
+    [523.25, 1.00, 0.10], 
+    [587.33, 1.00, 0.10], 
+    [523.25, 2.50, 0.50]  
 ];
 
 let chordIndex = 0;
@@ -185,11 +231,9 @@ function playPluck(freq, time, volume = 0.14, type = 'sine') {
     osc.type = type;
     osc.frequency.setValueAtTime(freq, time);
 
-    // Warm, rounded music box filter
     filter.type = 'lowpass';
-    filter.frequency.setValueAtTime(1400, time);
+    filter.frequency.setValueAtTime(1450, time);
 
-    // Pluck amplitude envelope curve
     gainNode.gain.setValueAtTime(0, time);
     gainNode.gain.linearRampToValueAtTime(volume, time + 0.015);
     gainNode.gain.exponentialRampToValueAtTime(0.0001, time + 1.4);
@@ -200,6 +244,41 @@ function playPluck(freq, time, volume = 0.14, type = 'sine') {
 
     osc.start(time);
     osc.stop(time + 1.55);
+}
+
+// Synthesize a soft white noise "puf" wind burst when blowing candle
+function playExtinguishSound() {
+    initAudio();
+    if (!audioCtx) return;
+    try {
+        const bufferSize = audioCtx.sampleRate * 0.35; 
+        const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+        const data = buffer.getChannelData(0);
+        for (let i = 0; i < bufferSize; i++) {
+            data[i] = Math.random() * 2 - 1; 
+        }
+        
+        const noiseNode = audioCtx.createBufferSource();
+        noiseNode.buffer = buffer;
+        
+        const filter = audioCtx.createBiquadFilter();
+        filter.type = 'lowpass';
+        filter.frequency.setValueAtTime(750, audioCtx.currentTime);
+        filter.frequency.exponentialRampToValueAtTime(12, audioCtx.currentTime + 0.32);
+        
+        const gainNode = audioCtx.createGain();
+        gainNode.gain.setValueAtTime(0.15, audioCtx.currentTime);
+        gainNode.gain.linearRampToValueAtTime(0.15, audioCtx.currentTime + 0.08);
+        gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.32);
+        
+        noiseNode.connect(filter);
+        filter.connect(gainNode);
+        gainNode.connect(audioCtx.destination);
+        
+        noiseNode.start();
+    } catch (err) {
+        console.warn("Audio synthesis error:", err);
+    }
 }
 
 function scheduleNextSynthEvents() {
@@ -213,7 +292,6 @@ function scheduleNextSynthEvents() {
             const pause = note[2] * beatTime;
 
             if (freq > 0) {
-                // Triangle wave note for clean music box vibe
                 playPluck(freq, nextEventTime, 0.20, 'triangle');
             }
 
@@ -238,7 +316,7 @@ function scheduleNextSynthEvents() {
             const beatStep = currentBeat % 8;
 
             if (beatStep === 0) {
-                playPluck(chord[0], nextEventTime, 0.14, 'sine'); // root note
+                playPluck(chord[0], nextEventTime, 0.14, 'sine'); 
             } else if (beatStep === 2) {
                 playPluck(chord[2], nextEventTime, 0.09, 'sine');
             } else if (beatStep === 4) {
@@ -248,7 +326,7 @@ function scheduleNextSynthEvents() {
                 playPluck(chord[1], nextEventTime, 0.09, 'sine');
             }
 
-            nextEventTime += beatTime * 0.5; // schedule every eighth note
+            nextEventTime += beatTime * 0.5; 
             currentBeat++;
 
             if (currentBeat % 8 === 0) {
@@ -302,10 +380,31 @@ function showScreen(screenId) {
     if (screenId === 'screen-intro') {
         startTypingIntro();
     } else if (screenId === 'screen-cake') {
-        playMelodyMode = true;
+        // Prepare Wish Input layer, hide Birthday Cake initially
+        document.getElementById('wish-input-panel').classList.remove('hidden-panel');
+        document.getElementById('cake-interactive-panel').classList.add('hidden-panel');
+        
+        // Reset states
+        playMelodyMode = false;
         noteIndex = 0;
+        
+        const wishInput = document.getElementById('wish-input');
+        wishInput.value = "";
+        wishInput.disabled = false;
+        document.getElementById('wish-char-counter').textContent = "0";
+        document.getElementById('btn-lock-wish').disabled = true;
+
+        const miniJar = document.querySelector('.wish-jar-svg.mini');
+        const miniGlow = document.querySelector('.wish-jar-glow-effect.mini');
+        const miniStars = document.querySelector('.jar-stars-mini');
+        if (miniJar) miniJar.classList.remove('glow-shake');
+        if (miniGlow) miniGlow.classList.remove('active');
+        if (miniStars) miniStars.classList.remove('glowing');
     } else if (screenId === 'screen-wishes') {
         triggerConfettiShower();
+        // Hide wish bubble just in case
+        const wishBubble = document.getElementById('wish-display-bubble');
+        if (wishBubble) wishBubble.classList.remove('visible');
     } else if (screenId === 'screen-envelope') {
         playMelodyMode = false;
     }
@@ -325,10 +424,10 @@ function openEnvelope() {
         
         // Explosion of sweet hearts confetti
         confetti({
-            particleCount: 40,
-            spread: 70,
-            origin: { y: 0.75 },
-            colors: ['#ff8fa4', '#ff6b8b', '#ffffff', '#ffeaa7']
+            particleCount: 50,
+            spread: 75,
+            origin: { y: 0.72 },
+            colors: ['#ff758c', '#ff7eb3', '#ffffff', '#f9d976']
         });
 
         setTimeout(() => {
@@ -337,7 +436,6 @@ function openEnvelope() {
     }
 }
 
-// Bind to envelope and wax seal for multiple touch points
 seal.addEventListener('click', (e) => {
     e.stopPropagation();
     openEnvelope();
@@ -346,7 +444,7 @@ envelope.addEventListener('click', openEnvelope);
 
 
 /* ==========================================================================
-   SCREEN 2: HEARTFELT INTRO (TYPING EFFECT)
+   SCREEN 2: HEARTFELT INTRO (TYPING EFFECT & CURSOR CONTROL)
    ========================================================================== */
 const introText1 = "Today is a beautiful day, because it's the day that a truly incredible person was brought into this world... 💝";
 const introText2 = "I wanted to create something small, cute, and completely unique to say Happy Birthday to you. Let's start! ✨";
@@ -358,6 +456,8 @@ function startTypingIntro() {
 
     line1Element.textContent = "";
     line2Element.textContent = "";
+    line1Element.className = "typing-text typing-cursor";
+    line2Element.className = "typing-text";
     actionBtn.classList.remove('visible');
 
     let i = 0;
@@ -367,6 +467,8 @@ function startTypingIntro() {
             i++;
             setTimeout(typeLine1, 35);
         } else {
+            line1Element.classList.remove('typing-cursor');
+            line2Element.classList.add('typing-cursor');
             let j = 0;
             function typeLine2() {
                 if (j < introText2.length) {
@@ -374,6 +476,7 @@ function startTypingIntro() {
                     j++;
                     setTimeout(typeLine2, 35);
                 } else {
+                    line2Element.classList.remove('typing-cursor');
                     actionBtn.classList.add('visible');
                 }
             }
@@ -389,7 +492,7 @@ document.getElementById('btn-to-carousel').addEventListener('click', () => {
 
 
 /* ==========================================================================
-   SCREEN 3: WHY YOU'RE AMAZING CAROUSEL (SWIPEABLE POLAROID DECK)
+   SCREEN 3: AMAZING DECK CAROUSEL (SPRING-PHYSICS SWIPE & PROGRESS DOTS)
    ========================================================================== */
 const cardStack = document.getElementById('crush-card-stack');
 const cards = Array.from(cardStack.children);
@@ -417,7 +520,49 @@ function updateCardStack() {
     } else {
         nextCardBtn.querySelector('span').textContent = "Next";
     }
+
+    // Dynamic dot builder update
+    let dotsContainer = document.querySelector('.carousel-progress-dots');
+    if (!dotsContainer) {
+        dotsContainer = document.createElement('div');
+        dotsContainer.className = 'carousel-progress-dots';
+        cardStack.parentNode.insertBefore(dotsContainer, cardStack.nextSibling);
+        for (let d = 0; d < cards.length; d++) {
+            const dot = document.createElement('span');
+            dot.className = 'progress-dot';
+            if (d === 0) dot.classList.add('active');
+            dotsContainer.appendChild(dot);
+        }
+    }
+    const dots = dotsContainer.querySelectorAll('.progress-dot');
+    dots.forEach((dot, idx) => {
+        if (idx === currentCardIndex) {
+            dot.classList.add('active');
+        } else {
+            dot.classList.remove('active');
+        }
+    });
 }
+
+// 3D Card tilt dynamic hover
+cards.forEach(card => {
+    card.addEventListener('mousemove', (e) => {
+        if (!card.classList.contains('active')) return;
+        const rect = card.getBoundingClientRect();
+        const x = e.clientX - rect.left - rect.width / 2;
+        const y = e.clientY - rect.top - rect.height / 2;
+        
+        const tiltX = (y / (rect.height / 2)) * -12; // cap tilt angle
+        const tiltY = (x / (rect.width / 2)) * 12;
+        
+        card.style.transform = `scale(1.02) rotateX(${tiltX}deg) rotateY(${tiltY}deg) translateZ(10px)`;
+    });
+
+    card.addEventListener('mouseleave', () => {
+        if (!card.classList.contains('active')) return;
+        card.style.transform = '';
+    });
+});
 
 nextCardBtn.addEventListener('click', () => {
     if (currentCardIndex < cards.length - 1) {
@@ -464,21 +609,35 @@ function handleSwipeGesture() {
     }
 }
 
+// Initial stack load
+updateCardStack();
+
 
 /* ==========================================================================
-   SCREEN 4: PLAYFUL ESCAPING "NO" DATE BUTTON GAME
+   SCREEN 4: PLAYFUL ESCAPING "NO" DATE BUTTON GAME & HEARTS GENERATOR
    ========================================================================== */
 const btnNo = document.getElementById('btn-no');
 const btnYes = document.getElementById('btn-yes');
 const escapeContainer = document.getElementById('escape-container');
 
+const teaseTexts = ["Nope! 😜", "Too fast! ⚡", "Try again! 💨", "Close one! 👀", "Not today! 🌸", "Almost! 🧸"];
+let teaseTooltip = null;
+
+function createTeaseTooltip() {
+    if (!teaseTooltip) {
+        teaseTooltip = document.createElement('div');
+        teaseTooltip.className = 'no-tease-tooltip';
+        escapeContainer.appendChild(teaseTooltip);
+    }
+}
+
 function escapeButton() {
+    createTeaseTooltip();
     const containerRect = escapeContainer.getBoundingClientRect();
     const btnRect = btnNo.getBoundingClientRect();
 
-    // Max bounds offset within the container
     const maxX = containerRect.width - btnRect.width;
-    const maxY = 155; // vertical offset area
+    const maxY = 150; 
 
     const randomX = Math.floor(Math.random() * maxX);
     const randomY = Math.floor((Math.random() - 0.5) * maxY);
@@ -486,6 +645,17 @@ function escapeButton() {
     btnNo.style.position = 'absolute';
     btnNo.style.left = `${randomX}px`;
     btnNo.style.top = `${randomY}px`;
+
+    // Tease text reveal
+    const phrase = teaseTexts[Math.floor(Math.random() * teaseTexts.length)];
+    teaseTooltip.textContent = phrase;
+    teaseTooltip.style.left = `${randomX + (btnNo.offsetWidth / 2) - 45}px`;
+    teaseTooltip.style.top = `${randomY + 30}px`;
+    teaseTooltip.classList.add('visible');
+
+    setTimeout(() => {
+        teaseTooltip.classList.remove('visible');
+    }, 750);
 }
 
 btnNo.addEventListener('mouseenter', escapeButton);
@@ -494,12 +664,36 @@ btnNo.addEventListener('touchstart', (e) => {
     escapeButton();
 });
 
+// Floating hearts emitter on YES hover/click
+function emitHearts() {
+    const btnRect = btnYes.getBoundingClientRect();
+    const heartEmitter = document.body;
+
+    for (let count = 0; count < 6; count++) {
+        setTimeout(() => {
+            const hParticle = document.createElement('div');
+            hParticle.className = 'floating-heart-particle';
+            hParticle.innerHTML = Math.random() > 0.55 ? '💖' : '❤️';
+            
+            const randomOffsetX = (Math.random() - 0.5) * btnYes.offsetWidth;
+            const randomOffsetY = (Math.random() - 0.5) * btnYes.offsetHeight;
+            hParticle.style.left = `${btnRect.left + window.scrollX + (btnYes.offsetWidth / 2) + randomOffsetX}px`;
+            hParticle.style.top = `${btnRect.top + window.scrollY + (btnYes.offsetHeight / 2) + randomOffsetY}px`;
+            
+            heartEmitter.appendChild(hParticle);
+            setTimeout(() => hParticle.remove(), 1600);
+        }, count * 120);
+    }
+}
+
+btnYes.addEventListener('mouseenter', emitHearts);
 btnYes.addEventListener('click', () => {
+    emitHearts();
     confetti({
         particleCount: 160,
         spread: 85,
         origin: { y: 0.6 },
-        colors: ['#ff6b8b', '#ff8a9f', '#ffeaa7', '#a29bfe']
+        colors: ['#ff758c', '#ff7eb3', '#ffeaa7', '#a29bfe']
     });
 
     setTimeout(() => {
@@ -509,8 +703,65 @@ btnYes.addEventListener('click', () => {
 
 
 /* ==========================================================================
-   SCREEN 5: THE BIRTHDAY CAKE CANDLES GAME
+   SCREEN 5: THE BIRTHDAY CAKE & WISH JAR FORM INTERACTION
    ========================================================================== */
+const wishInput = document.getElementById('wish-input');
+const wishCharCounter = document.getElementById('wish-char-counter');
+const btnLockWish = document.getElementById('btn-lock-wish');
+
+wishInput.addEventListener('input', () => {
+    const len = wishInput.value.length;
+    wishCharCounter.textContent = len;
+    
+    if (len > 0) {
+        btnLockWish.disabled = false;
+    } else {
+        btnLockWish.disabled = true;
+    }
+});
+
+btnLockWish.addEventListener('click', () => {
+    const wishValue = wishInput.value.trim();
+    if (wishValue) {
+        wishInput.disabled = true;
+        btnLockWish.disabled = true;
+        
+        // Save the wish globally
+        window.storedCrushWish = wishValue;
+        
+        // Trigger mini jar absorption animation
+        const miniJar = document.querySelector('.wish-jar-svg.mini');
+        const miniGlow = document.querySelector('.wish-jar-glow-effect.mini');
+        const miniStars = document.querySelector('.jar-stars-mini');
+        
+        if (miniJar) miniJar.classList.add('glow-shake');
+        if (miniGlow) miniGlow.classList.add('active');
+        if (miniStars) miniStars.classList.add('glowing');
+        
+        // Confetti burst from mini jar position
+        const jarRect = miniJar.getBoundingClientRect();
+        confetti({
+            particleCount: 45,
+            spread: 55,
+            origin: { 
+                x: (jarRect.left + jarRect.width / 2) / window.innerWidth, 
+                y: (jarRect.top + jarRect.height / 2) / window.innerHeight 
+            },
+            colors: ['#f9d976', '#e9b646', '#ffffff']
+        });
+
+        // Swap input box for cake panel
+        setTimeout(() => {
+            document.getElementById('wish-input-panel').classList.add('hidden-panel');
+            document.getElementById('cake-interactive-panel').classList.remove('hidden-panel');
+            
+            // Start the birthday arpeggio melody
+            playMelodyMode = true;
+            noteIndex = 0;
+        }, 1200);
+    }
+});
+
 const candles = document.querySelectorAll('.candle');
 const candleCounter = document.getElementById('candle-counter');
 let candlesLit = 3;
@@ -522,6 +773,9 @@ candles.forEach(candle => {
             candlesLit--;
             candleCounter.textContent = candlesLit;
             
+            // Play synthesized blow noise
+            playExtinguishSound();
+
             // Extinguish smoke puff effect
             confetti({
                 particleCount: 18,
@@ -546,7 +800,7 @@ candles.forEach(candle => {
 
 
 /* ==========================================================================
-   SCREEN 6: THE HAPPY BIRTHDAY FINALE
+   SCREEN 6: THE HAPPY BIRTHDAY FINALE & WISH JAR REVEAL
    ========================================================================== */
 function triggerConfettiShower() {
     const duration = 4.5 * 1000;
@@ -558,20 +812,88 @@ function triggerConfettiShower() {
             angle: 60,
             spread: 55,
             origin: { x: 0, y: 0.85 },
-            colors: ['#ff8fa4', '#ff6b8b', '#ffeaa7', '#a29bfe']
+            colors: ['#ff758c', '#ff7eb3', '#f9d976', '#a29bfe']
         });
         confetti({
             particleCount: 3,
             angle: 120,
             spread: 55,
             origin: { x: 1, y: 0.85 },
-            colors: ['#ff8fa4', '#ff6b8b', '#ffeaa7', '#a29bfe']
+            colors: ['#ff758c', '#ff7eb3', '#f9d976', '#a29bfe']
         });
 
         if (Date.now() < end) {
             requestAnimationFrame(frame);
         }
     }());
+}
+
+const revealWishJar = document.getElementById('reveal-wish-jar');
+const wishBubble = document.getElementById('wish-display-bubble');
+const wishDisplayText = document.getElementById('wish-display-text');
+const closeWishBubble = document.getElementById('btn-close-wish-bubble');
+
+if (revealWishJar && wishBubble) {
+    revealWishJar.addEventListener('click', (e) => {
+        e.stopPropagation();
+        
+        wishDisplayText.textContent = window.storedCrushWish || "Your secret wish is locked in the stars... 🌟";
+        wishBubble.classList.add('visible');
+        
+        // Burst stars from reveal jar position
+        const jarRect = revealWishJar.getBoundingClientRect();
+        confetti({
+            particleCount: 30,
+            spread: 40,
+            origin: { 
+                x: (jarRect.left + jarRect.width / 2) / window.innerWidth, 
+                y: (jarRect.top + jarRect.height / 2) / window.innerHeight 
+            },
+            colors: ['#f9d976', '#e9b646', '#ffffff', '#ff758c']
+        });
+    });
+}
+
+if (closeWishBubble) {
+    closeWishBubble.addEventListener('click', (e) => {
+        e.stopPropagation();
+        wishBubble.classList.remove('visible');
+    });
+}
+
+// Clicking away from wish bubble closes it
+document.addEventListener('click', (e) => {
+    if (wishBubble && wishBubble.classList.contains('visible') && !wishBubble.contains(e.target)) {
+        wishBubble.classList.remove('visible');
+    }
+});
+
+/* Share on WhatsApp functionality */
+const btnShareWhatsapp = document.getElementById('btn-share-whatsapp');
+if (btnShareWhatsapp) {
+    btnShareWhatsapp.addEventListener('click', () => {
+        let pageUrl = window.location.href;
+        
+        // If running locally, tell the user how to host it, and copy template to clipboard
+        if (pageUrl.startsWith('file://') || pageUrl.includes('localhost') || pageUrl.includes('127.0.0.1')) {
+            const tempUrlPlaceholder = "[Insert Your Hosted Link here, e.g. GitHub Pages]";
+            const textToCopy = `Hey! I made this special surprise just for you. Open this letter to see: ${tempUrlPlaceholder}`;
+            
+            navigator.clipboard.writeText(textToCopy)
+                .then(() => {
+                    alert("Since you are running this locally, the link needs to be hosted online (using GitHub Pages, Netlify, or Vercel) for your crush to see it. We have copied a message template to your clipboard so you can easily paste and share it once hosted! 💌");
+                })
+                .catch(err => {
+                    console.error("Could not copy template to clipboard:", err);
+                    alert("I made a special surprise just for you! Host this page online to get a shareable link 💌");
+                });
+        } else {
+            // Hosted URL: Share directly!
+            const textToShare = `Hey! I made this special surprise just for you. Open this letter to see: ${pageUrl}`;
+            const whatsappUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(textToShare)}`;
+            window.open(whatsappUrl, '_blank');
+        }
+    });
 }
 
 /* Replay Reset functionality */
@@ -590,6 +912,10 @@ document.getElementById('btn-replay').addEventListener('click', () => {
     btnNo.style.position = 'relative';
     btnNo.style.left = 'auto';
     btnNo.style.top = 'auto';
+    
+    // Clear wish states
+    window.storedCrushWish = "";
+    if (wishBubble) wishBubble.classList.remove('visible');
 
     stopMusic();
     document.getElementById('main-envelope').classList.remove('open');

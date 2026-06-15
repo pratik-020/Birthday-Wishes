@@ -167,11 +167,65 @@
             </div>
         </section>
 
-        <!-- SCREEN 5: THE BIRTHDAY CAKE -->
+        <!-- SCREEN 5: THE BIRTHDAY CAKE & WISH JAR -->
         <section id="screen-cake" class="screen">
-            <div class="glass-card cake-card">
-                <h1 class="cursive-header gold-text animate-pop">Make a Wish!</h1>
-                <p class="cake-instruction">Make a wish, then tap the candles to blow them out!</p>
+            <!-- WISH INPUT PANEL -->
+            <div id="wish-input-panel" class="glass-card wish-card animate-pop">
+                <div class="heart-pulse-box">🌟</div>
+                <h1 class="cursive-header gold-text">Make a Wish</h1>
+                <p class="cake-instruction">Close your eyes, think of something beautiful, and lock it in the jar...</p>
+                
+                <div class="wish-input-container">
+                    <textarea id="wish-input" placeholder="Type your secret wish here..." maxlength="200" rows="3"></textarea>
+                    <div class="char-count"><span id="wish-char-counter">0</span>/200</div>
+                </div>
+
+                <div class="wish-jar-preview">
+                    <div class="wish-jar-glow-effect mini"></div>
+                    <svg class="wish-jar-svg mini" viewBox="0 0 100 130" width="75" height="97">
+                        <defs>
+                            <linearGradient id="jarGlassMini" x1="0%" y1="0%" x2="100%" y2="0%">
+                                <stop offset="0%" stop-color="rgba(255,255,255,0.15)"/>
+                                <stop offset="30%" stop-color="rgba(255,255,255,0.3)"/>
+                                <stop offset="70%" stop-color="rgba(255,255,255,0.05)"/>
+                                <stop offset="100%" stop-color="rgba(255,255,255,0.25)"/>
+                            </linearGradient>
+                            <linearGradient id="jarLidMini" x1="0%" y1="0%" x2="100%" y2="0%">
+                                <stop offset="0%" stop-color="#b0953a"/>
+                                <stop offset="50%" stop-color="#f9d976"/>
+                                <stop offset="100%" stop-color="#b0953a"/>
+                            </linearGradient>
+                            <filter id="jarGlowMini">
+                                <feGaussianBlur stdDeviation="4" result="blur"/>
+                                <feMerge>
+                                    <feMergeNode in="blur"/>
+                                    <feMergeNode in="SourceGraphic"/>
+                                </feMerge>
+                            </filter>
+                        </defs>
+                        <!-- Lid -->
+                        <rect x="32" y="12" width="36" height="8" rx="2" fill="url(#jarLidMini)"/>
+                        <ellipse cx="50" cy="12" rx="18" ry="3" fill="#e9b646"/>
+                        <!-- Neck -->
+                        <path d="M 35,20 L 65,20 L 63,28 L 37,28 Z" fill="url(#jarGlassMini)"/>
+                        <!-- Body -->
+                        <path d="M 37,28 Q 18,32 18,65 Q 18,105 50,105 Q 82,105 82,65 Q 82,32 63,28 Z" fill="url(#jarGlassMini)" stroke="rgba(255,255,255,0.2)" stroke-width="1.5"/>
+                        <!-- Glow core inside -->
+                        <g class="jar-stars-mini" opacity="0.2">
+                            <circle cx="50" cy="65" r="7" fill="#ffeaa7" filter="url(#jarGlowMini)"/>
+                        </g>
+                    </svg>
+                </div>
+
+                <button id="btn-lock-wish" class="btn btn-primary" disabled>
+                    <span>Lock Wish in Jar</span> <i class="fas fa-lock"></i>
+                </button>
+            </div>
+
+            <!-- INTERACTIVE CAKE PANEL -->
+            <div id="cake-interactive-panel" class="glass-card cake-card hidden-panel">
+                <h1 class="cursive-header gold-text animate-pop">Blow the Candles!</h1>
+                <p class="cake-instruction">Tap the candles to blow them out and release your wish!</p>
                 
                 <!-- Highly Stylized SVG Interactive Birthday Cake -->
                 <div class="cake-container">
@@ -208,6 +262,13 @@
                                     <feMergeNode in="SourceGraphic"/>
                                 </feMerge>
                             </filter>
+                            <!-- Flame distortion filter -->
+                            <filter id="flameDistortion" x="-20%" y="-20%" width="140%" height="140%">
+                                <feTurbulence type="fractalNoise" baseFrequency="0.06 0.12" numOctaves="2" result="noise" seed="1">
+                                    <animate attributeName="seed" from="1" to="100" dur="8s" repeatCount="indefinite"/>
+                                </feTurbulence>
+                                <feDisplacementMap in="SourceGraphic" in2="noise" scale="4" xChannelSelector="R" yChannelSelector="G"/>
+                            </filter>
                         </defs>
 
                         <!-- Glass Cake Stand Base -->
@@ -236,6 +297,8 @@
                             <line x1="110" y1="85" x2="110" y2="78" stroke="#2d3436" stroke-width="2"/>
                             <!-- Flame -->
                             <path class="flame" d="M 110,78 C 104,68 106,58 110,48 C 114,58 116,68 110,78 Z" fill="#ff7675" filter="url(#glow)"/>
+                            <!-- Large click overlay -->
+                            <rect x="95" y="40" width="30" height="110" opacity="0" cursor="pointer"/>
                         </g>
 
                         <!-- Candle 2 (Center) -->
@@ -247,6 +310,8 @@
                             <line x1="150" y1="75" x2="150" y2="68" stroke="#2d3436" stroke-width="2"/>
                             <!-- Flame -->
                             <path class="flame animate-flicker" d="M 150,68 C 144,58 146,48 150,38 C 154,48 156,58 150,68 Z" fill="#fdcb6e" filter="url(#glow)"/>
+                            <!-- Large click overlay -->
+                            <rect x="135" y="30" width="30" height="120" opacity="0" cursor="pointer"/>
                         </g>
 
                         <!-- Candle 3 (Right) -->
@@ -258,6 +323,8 @@
                             <line x1="190" y1="85" x2="190" y2="78" stroke="#2d3436" stroke-width="2"/>
                             <!-- Flame -->
                             <path class="flame" d="M 190,78 C 184,68 186,58 190,48 C 194,58 196,68 190,78 Z" fill="#ff7675" filter="url(#glow)"/>
+                            <!-- Large click overlay -->
+                            <rect x="175" y="40" width="30" height="110" opacity="0" cursor="pointer"/>
                         </g>
                     </svg>
                     <!-- Smoke Particles (Initially Hidden) -->
@@ -316,9 +383,67 @@
                     </div>
                 </div>
 
-                <button id="btn-replay" class="btn btn-secondary">
-                    <i class="fas fa-undo"></i> <span>Replay the Journey</span>
-                </button>
+                <!-- The Wish Jar (Finale Reveal) -->
+                <div class="wish-jar-reveal-wrapper">
+                    <div class="wish-jar-container" id="reveal-wish-jar">
+                        <div class="wish-jar-glow-effect"></div>
+                        <svg class="wish-jar-svg" viewBox="0 0 100 130" width="90" height="117">
+                            <defs>
+                                <linearGradient id="jarGlassFinal" x1="0%" y1="0%" x2="100%" y2="0%">
+                                    <stop offset="0%" stop-color="rgba(255,255,255,0.2)"/>
+                                    <stop offset="30%" stop-color="rgba(255,255,255,0.35)"/>
+                                    <stop offset="70%" stop-color="rgba(255,255,255,0.08)"/>
+                                    <stop offset="100%" stop-color="rgba(255,255,255,0.3)"/>
+                                </linearGradient>
+                                <linearGradient id="jarLidFinal" x1="0%" y1="0%" x2="100%" y2="0%">
+                                    <stop offset="0%" stop-color="#d4af37"/>
+                                    <stop offset="50%" stop-color="#f9d976"/>
+                                    <stop offset="100%" stop-color="#d4af37"/>
+                                </linearGradient>
+                                <filter id="jarGlowFinal">
+                                    <feGaussianBlur stdDeviation="6" result="blur"/>
+                                    <feMerge>
+                                        <feMergeNode in="blur"/>
+                                        <feMergeNode in="SourceGraphic"/>
+                                    </feMerge>
+                                </filter>
+                            </defs>
+                            <!-- Lid -->
+                            <rect x="30" y="10" width="40" height="8" rx="2" fill="url(#jarLidFinal)"/>
+                            <ellipse cx="50" cy="10" rx="20" ry="3" fill="#f9d976"/>
+                            <!-- Neck -->
+                            <path d="M 33,18 L 67,18 L 65,26 L 35,26 Z" fill="url(#jarGlassFinal)"/>
+                            <!-- Body -->
+                            <path d="M 35,26 Q 15,30 15,65 Q 15,110 50,110 Q 85,110 85,65 Q 85,30 65,26 Z" fill="url(#jarGlassFinal)" stroke="rgba(255,255,255,0.25)" stroke-width="1.5"/>
+                            <!-- Floating Star Core inside -->
+                            <g class="jar-stars">
+                                <circle cx="50" cy="65" r="9" fill="#ffeaa7" filter="url(#jarGlowFinal)" class="jar-core-glow"/>
+                                <polygon points="50,55 52,60 57,60 53,63 55,68 50,65 45,68 47,63 43,60 48,60" fill="#fff" class="jar-star-1"/>
+                                <circle cx="35" cy="50" r="2.5" fill="#ff7675" opacity="0.8" class="floating-pollen"/>
+                                <circle cx="65" cy="55" r="2" fill="#ffeaa7" opacity="0.7" class="floating-pollen"/>
+                                <circle cx="45" cy="82" r="3" fill="#a29bfe" opacity="0.7" filter="url(#jarGlowFinal)" class="floating-pollen"/>
+                                <circle cx="58" cy="78" r="2" fill="#fff" opacity="0.9" class="floating-pollen"/>
+                            </g>
+                        </svg>
+                        <p class="wish-jar-instruction">Tap the Wish Jar to recall your wish 🌟</p>
+                    </div>
+
+                    <!-- Hidden wish popup/bubble -->
+                    <div id="wish-display-bubble" class="wish-bubble hidden">
+                        <div class="wish-bubble-close" id="btn-close-wish-bubble">&times;</div>
+                        <h4 class="wish-bubble-title">Your Stored Wish:</h4>
+                        <p id="wish-display-text" class="wish-bubble-text"></p>
+                    </div>
+                </div>
+
+                <div class="finale-actions">
+                    <button id="btn-share-whatsapp" class="btn btn-primary">
+                        <i class="fab fa-whatsapp"></i> <span>Share on WhatsApp</span>
+                    </button>
+                    <button id="btn-replay" class="btn btn-secondary">
+                        <i class="fas fa-undo"></i> <span>Replay the Journey</span>
+                    </button>
+                </div>
             </div>
         </section>
 
