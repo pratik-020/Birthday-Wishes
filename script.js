@@ -868,33 +868,6 @@ document.addEventListener('click', (e) => {
     }
 });
 
-/* Share on WhatsApp functionality */
-const btnShareWhatsapp = document.getElementById('btn-share-whatsapp');
-if (btnShareWhatsapp) {
-    btnShareWhatsapp.addEventListener('click', () => {
-        let pageUrl = window.location.href;
-        
-        // If running locally, tell the user how to host it, and copy template to clipboard
-        if (pageUrl.startsWith('file://') || pageUrl.includes('localhost') || pageUrl.includes('127.0.0.1')) {
-            const tempUrlPlaceholder = "[Insert Your Hosted Link here, e.g. GitHub Pages]";
-            const textToCopy = `Hey! I made this special surprise just for you. Open this letter to see: ${tempUrlPlaceholder}`;
-            
-            navigator.clipboard.writeText(textToCopy)
-                .then(() => {
-                    alert("Since you are running this locally, the link needs to be hosted online (using GitHub Pages, Netlify, or Vercel) for your crush to see it. We have copied a message template to your clipboard so you can easily paste and share it once hosted! 💌");
-                })
-                .catch(err => {
-                    console.error("Could not copy template to clipboard:", err);
-                    alert("I made a special surprise just for you! Host this page online to get a shareable link 💌");
-                });
-        } else {
-            // Hosted URL: Share directly!
-            const textToShare = `Hey! I made this special surprise just for you. Open this letter to see: ${pageUrl}`;
-            const whatsappUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(textToShare)}`;
-            window.open(whatsappUrl, '_blank');
-        }
-    });
-}
 
 /* Replay Reset functionality */
 document.getElementById('btn-replay').addEventListener('click', () => {

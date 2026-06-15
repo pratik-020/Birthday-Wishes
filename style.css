@@ -1487,30 +1487,9 @@ body {
     font-weight: 300;
 }
 
-.finale-actions {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    width: 100%;
-    max-width: 280px;
-    align-items: center;
-    margin-top: 15px;
+#btn-replay {
+    margin-top: 10px;
     margin-bottom: 25px;
-}
-
-.finale-actions .btn {
-    width: 100%;
-}
-
-#btn-share-whatsapp {
-    background: linear-gradient(135deg, #25D366 0%, #128C7E 100%);
-    color: white;
-    box-shadow: 0 6px 20px rgba(37, 211, 102, 0.3);
-}
-
-#btn-share-whatsapp:active {
-    transform: translateY(1px) scale(0.97);
-    box-shadow: 0 3px 10px rgba(37, 211, 102, 0.3);
 }
 
 /* ==========================================================================
