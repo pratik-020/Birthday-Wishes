@@ -1184,6 +1184,22 @@ body {
     to { background-position: 300% center; }
 }
 
+.birthday-name-subtitle {
+    font-family: var(--font-heading);
+    font-size: 2.8rem;
+    text-align: center;
+    color: #ff4444;
+    text-shadow: 0 0 18px rgba(255, 68, 68, 0.6), 0 2px 10px rgba(255, 68, 68, 0.3);
+    margin-top: -18px;
+    animation: nameGlow 2.5s ease-in-out infinite alternate;
+    line-height: 1.1;
+}
+
+@keyframes nameGlow {
+    0% { text-shadow: 0 0 12px rgba(255, 68, 68, 0.5), 0 2px 8px rgba(255, 68, 68, 0.2); }
+    100% { text-shadow: 0 0 28px rgba(255, 68, 68, 0.9), 0 4px 18px rgba(255, 68, 68, 0.5); }
+}
+
 .final-subtitle {
     font-size: 0.95rem;
     color: var(--text-muted);
