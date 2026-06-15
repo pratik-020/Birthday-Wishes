@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>A Special Surprise for You ✨</title>
+    <!-- Google Fonts: Sacramento, Playfair Display (luxurious heading) & Outfit -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;700;800&family=Playfair+Display:ital,wght@0,700;0,900;1,600&family=Sacramento&display=swap" rel="stylesheet">
+    <!-- FontAwesome for Premium Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Premium Mesh Glowing Background Blobs -->
+    <div class="mesh-glows">
+        <div class="glow-1"></div>
+        <div class="glow-2"></div>
+        <div class="glow-3"></div>
+    </div>
+
+    <!-- Floating Audio Control -->
+    <div id="audio-control" class="audio-control hidden">
+        <button id="music-btn" aria-label="Toggle Music">
+            <i class="fas fa-music"></i>
+            <span class="music-wave">
+                <span></span>
+                <span></span>
+                <span></span>
+            </span>
+        </button>
+    </div>
+
+    <!-- Background Particle Canvas (Fairy Dust + Hearts) -->
+    <canvas id="particle-canvas"></canvas>
+
+    <!-- Main Container -->
+    <main id="app-container">
+
+        <!-- SCREEN 1: THE LOCK SCREEN (ENVELOPE) -->
+        <section id="screen-envelope" class="screen active">
+            <div class="glass-card envelope-card">
+                <div class="sparkle-title">For Someone Special... ✨</div>
+                
+                <div class="envelope-wrapper">
+                    <div class="envelope" id="main-envelope">
+                        <div class="envelope-flap"></div>
+                        <div class="envelope-paper">
+                            <div class="paper-header">A Little Letter... 💌</div>
+                            <div class="paper-line"></div>
+                            <div class="paper-line"></div>
+                        </div>
+                        <div class="envelope-front"></div>
+                        <!-- Wax Seal with Love Heart -->
+                        <div class="wax-seal" id="seal">
+                            <div class="wax-heart">❤️</div>
+                        </div>
+                    </div>
+                </div>
+
+                <p class="instruction-text pulse">You have a secret message.<br>Tap the wax seal to break it open.</p>
+            </div>
+        </section>
+
+        <!-- SCREEN 2: HEARTFELT INTRO -->
+        <section id="screen-intro" class="screen">
+            <div class="glass-card intro-card">
+                <div class="avatar-container">
+                    <div class="avatar-glow"></div>
+                    <div class="avatar-icon">💝</div>
+                </div>
+                <h1 class="cursive-header">Hey there...</h1>
+                <div class="typing-container">
+                    <p id="intro-text-line-1" class="typing-text"></p>
+                    <p id="intro-text-line-2" class="typing-text delay-1"></p>
+                </div>
+                <button id="btn-to-carousel" class="btn btn-primary hidden-btn">
+                    <span>Open message</span> <i class="fas fa-chevron-right"></i>
+                </button>
+            </div>
+        </section>
+
+        <!-- SCREEN 3: WHY YOU'RE AMAZING CAROUSEL -->
+        <section id="screen-carousel" class="screen">
+            <div class="carousel-container">
+                <div class="carousel-header">
+                    <h2>A Few Things I Adore About You...</h2>
+                    <p>Swipe cards left/right or click buttons</p>
+                </div>
+
+                <div class="card-stack" id="crush-card-stack">
+                    <!-- Card 1 -->
+                    <div class="stack-card active" data-index="0">
+                        <div class="card-inner">
+                            <div class="card-bg-glow"></div>
+                            <div class="card-icon">✨</div>
+                            <h3>Your Radiant Smile</h3>
+                            <p>It's like a burst of warm sunshine on the gloomiest day. One smile from you can completely shift my entire mood.</p>
+                            <span class="card-number">1 / 5</span>
+                        </div>
+                    </div>
+                    <!-- Card 2 -->
+                    <div class="stack-card" data-index="1">
+                        <div class="card-inner">
+                            <div class="card-bg-glow"></div>
+                            <div class="card-icon">🌸</div>
+                            <h3>Your Electric Vibe</h3>
+                            <p>You carry this incredible, gentle presence that draws everyone in. Being around you feels both peaceful and exciting all at once.</p>
+                            <span class="card-number">2 / 5</span>
+                        </div>
+                    </div>
+                    <!-- Card 3 -->
+                    <div class="stack-card" data-index="2">
+                        <div class="card-inner">
+                            <div class="card-bg-glow"></div>
+                            <div class="card-icon">🧸</div>
+                            <h3>The Little Moments</h3>
+                            <p>It's the way you laugh at silly things, your cute expressions, and how effortlessly comfortable you make me feel. The simplest moments with you are my absolute favorite.</p>
+                            <span class="card-number">3 / 5</span>
+                        </div>
+                    </div>
+                    <!-- Card 4 -->
+                    <div class="stack-card" data-index="3">
+                        <div class="card-inner">
+                            <div class="card-bg-glow"></div>
+                            <div class="card-icon">💫</div>
+                            <h3>How You Inspire Me</h3>
+                            <p>Without even trying, you inspire me to be kinder, happier, and more thoughtful. Just being yourself is a work of art.</p>
+                            <span class="card-number">4 / 5</span>
+                        </div>
+                    </div>
+                    <!-- Card 5 -->
+                    <div class="stack-card" data-index="4">
+                        <div class="card-inner">
+                            <div class="card-bg-glow"></div>
+                            <div class="card-icon">❤️</div>
+                            <h3>Your Beautiful Heart</h3>
+                            <p>Behind your gorgeous smile is a soul that is incredibly kind, genuine, and warm. You bring a gentle warmth into my world, and I feel so lucky to have you in it.</p>
+                            <span class="card-number">5 / 5</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="carousel-controls">
+                    <button id="btn-prev-card" class="btn btn-secondary btn-icon" disabled>
+                        <i class="fas fa-arrow-left"></i>
+                    </button>
+                    <button id="btn-next-card" class="btn btn-primary">
+                        <span>Next</span> <i class="fas fa-arrow-right"></i>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- SCREEN 4: PLAYFUL DATE QUESTION -->
+        <section id="screen-game" class="screen">
+            <div class="glass-card game-card">
+                <div class="heart-pulse-box">💖</div>
+                <h2>One tiny question...</h2>
+                <p class="question-text">Since it's your special day, would you go on a coffee/dessert date with me? ☕🍰</p>
+                
+                <div class="game-btn-container" id="escape-container">
+                    <button id="btn-yes" class="btn btn-primary btn-lg">Yes, I'd love to! 🥰</button>
+                    <button id="btn-no" class="btn btn-danger">No way 😜</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- SCREEN 5: THE BIRTHDAY CAKE -->
+        <section id="screen-cake" class="screen">
+            <div class="glass-card cake-card">
+                <h1 class="cursive-header gold-text animate-pop">Make a Wish!</h1>
+                <p class="cake-instruction">Make a wish, then tap the candles to blow them out!</p>
+                
+                <!-- Highly Stylized SVG Interactive Birthday Cake -->
+                <div class="cake-container">
+                    <svg class="cake-svg" viewBox="0 0 300 300" width="230" height="230">
+                        <defs>
+                            <!-- Drop Shadows -->
+                            <filter id="shadow" x="-10%" y="-10%" width="120%" height="120%">
+                                <feDropShadow dx="0" dy="8" stdDeviation="5" flood-opacity="0.3"/>
+                            </filter>
+                            <!-- Cake Gradients -->
+                            <linearGradient id="cakeStand" x1="0%" y1="0%" x2="0%" y2="100%">
+                                <stop offset="0%" stop-color="#fff" />
+                                <stop offset="100%" stop-color="#dfe6e9" />
+                            </linearGradient>
+                            <linearGradient id="cakeBottom" x1="0%" y1="0%" x2="100%" y2="0%">
+                                <stop offset="0%" stop-color="#6c5ce7" />
+                                <stop offset="50%" stop-color="#a29bfe" />
+                                <stop offset="100%" stop-color="#6c5ce7" />
+                            </linearGradient>
+                            <linearGradient id="cakeTop" x1="0%" y1="0%" x2="100%" y2="0%">
+                                <stop offset="0%" stop-color="#fd79a8" />
+                                <stop offset="50%" stop-color="#ff7675" />
+                                <stop offset="100%" stop-color="#fd79a8" />
+                            </linearGradient>
+                            <linearGradient id="frostingGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                                <stop offset="0%" stop-color="#ffffff" />
+                                <stop offset="100%" stop-color="#f6e58d" />
+                            </linearGradient>
+                            <!-- Flame Glow -->
+                            <filter id="glow">
+                                <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+                                <feMerge>
+                                    <feMergeNode in="coloredBlur"/>
+                                    <feMergeNode in="SourceGraphic"/>
+                                </feMerge>
+                            </filter>
+                        </defs>
+
+                        <!-- Glass Cake Stand Base -->
+                        <path d="M 120,240 L 110,265 L 190,265 L 180,240 Z" fill="url(#cakeStand)" filter="url(#shadow)" opacity="0.9"/>
+                        <!-- Cake Stand Plate -->
+                        <ellipse cx="150" cy="240" rx="110" ry="18" fill="url(#cakeStand)" filter="url(#shadow)"/>
+                        <ellipse cx="150" cy="238" rx="100" ry="13" fill="#ffeaa7" opacity="0.5"/>
+
+                        <!-- Tier 1: Purple Base Layer -->
+                        <path d="M 65,160 Q 150,185 235,160 L 235,230 Q 150,252 65,230 Z" fill="url(#cakeBottom)" filter="url(#shadow)"/>
+                        
+                        <!-- Tier 2: Cream Drips Layer -->
+                        <path d="M 65,160 Q 78,188 92,160 Q 106,192 120,165 Q 134,188 148,160 Q 162,192 176,165 Q 190,186 204,160 Q 218,188 235,160 L 235,175 Q 150,200 65,175 Z" fill="url(#frostingGrad)" />
+                        
+                        <!-- Tier 3: Pink Top Layer -->
+                        <ellipse cx="150" cy="160" rx="85" ry="22" fill="url(#cakeTop)"/>
+                        <!-- Cream Topping Star Swirls -->
+                        <ellipse cx="150" cy="158" rx="75" ry="17" fill="#ffffff" opacity="0.85"/>
+
+                        <!-- Candle 1 (Left) -->
+                        <g class="candle" id="candle-1">
+                            <rect x="105" y="85" width="10" height="60" fill="#a29bfe" rx="3" filter="url(#shadow)"/>
+                            <rect x="105" y="92" width="10" height="5" fill="#ffffff" opacity="0.6"/>
+                            <rect x="105" y="105" width="10" height="5" fill="#ffffff" opacity="0.6"/>
+                            <rect x="105" y="118" width="10" height="5" fill="#ffffff" opacity="0.6"/>
+                            <line x1="110" y1="85" x2="110" y2="78" stroke="#2d3436" stroke-width="2"/>
+                            <!-- Flame -->
+                            <path class="flame" d="M 110,78 C 104,68 106,58 110,48 C 114,58 116,68 110,78 Z" fill="#ff7675" filter="url(#glow)"/>
+                        </g>
+
+                        <!-- Candle 2 (Center) -->
+                        <g class="candle" id="candle-2">
+                            <rect x="145" y="75" width="10" height="70" fill="#fd79a8" rx="3" filter="url(#shadow)"/>
+                            <rect x="145" y="82" width="10" height="5" fill="#ffffff" opacity="0.6"/>
+                            <rect x="145" y="97" width="10" height="5" fill="#ffffff" opacity="0.6"/>
+                            <rect x="145" y="112" width="10" height="5" fill="#ffffff" opacity="0.6"/>
+                            <line x1="150" y1="75" x2="150" y2="68" stroke="#2d3436" stroke-width="2"/>
+                            <!-- Flame -->
+                            <path class="flame animate-flicker" d="M 150,68 C 144,58 146,48 150,38 C 154,48 156,58 150,68 Z" fill="#fdcb6e" filter="url(#glow)"/>
+                        </g>
+
+                        <!-- Candle 3 (Right) -->
+                        <g class="candle" id="candle-3">
+                            <rect x="185" y="85" width="10" height="60" fill="#a29bfe" rx="3" filter="url(#shadow)"/>
+                            <rect x="185" y="92" width="10" height="5" fill="#ffffff" opacity="0.6"/>
+                            <rect x="185" y="105" width="10" height="5" fill="#ffffff" opacity="0.6"/>
+                            <rect x="185" y="118" width="10" height="5" fill="#ffffff" opacity="0.6"/>
+                            <line x1="190" y1="85" x2="190" y2="78" stroke="#2d3436" stroke-width="2"/>
+                            <!-- Flame -->
+                            <path class="flame" d="M 190,78 C 184,68 186,58 190,48 C 194,58 196,68 190,78 Z" fill="#ff7675" filter="url(#glow)"/>
+                        </g>
+                    </svg>
+                    <!-- Smoke Particles (Initially Hidden) -->
+                    <div class="smoke-effect" id="smoke"></div>
+                </div>
+
+                <div class="candle-count">Candles burning: <span id="candle-counter">3</span></div>
+            </div>
+        </section>
+
+        <!-- SCREEN 6: WISHES & MEMORIES GALLERY -->
+        <section id="screen-wishes" class="screen">
+            <div class="final-container">
+                <div class="sparkles-container">✨ 🎉 🎂 💖 ✨</div>
+                <h1 class="happy-birthday-title text-focus-in">HAPPY BIRTHDAY!</h1>
+                <p class="final-subtitle">Wishing you a day as breathtakingly wonderful as you are.</p>
+
+                <!-- Custom Letter Board -->
+                <div class="glass-card letter-card">
+                    <p class="letter-text">
+                        "From the first time we spoke, there was a spark that I couldn't quite explain. You have this beautiful way of lighting up my entire world just by being yourself. Every laugh we share, every conversation we have, is a memory I keep close to my heart."
+                    </p>
+                    <p class="letter-text" style="margin-top: 12px;">
+                        "I adore the kindness in your eyes, the warmth in your voice, and the incredible energy you bring into any room. You make the ordinary feel completely magical, and today, I want to celebrate the wonderful person you are."
+                    </p>
+                    <p class="letter-text" style="margin-top: 12px;">
+                        "May your day be filled with all the laughter, joy, and sweetness you bring into my life every single day. Happy Birthday, my favorite person."
+                    </p>
+                    <span class="letter-sig">With all my love, ❤️</span>
+                </div>
+
+                <!-- Memory Polaroid Gallery -->
+                <div class="gallery-wrapper">
+                    <h3>A Canvas of Wishes 🎨</h3>
+                    <div class="polaroid-gallery">
+                        <div class="polaroid" style="--rotation: -4deg;">
+                            <div class="polaroid-img-wrapper">
+                                <img src="assets/pic1.png" alt="Starry Sky Dream">
+                            </div>
+                            <div class="polaroid-caption">Infinite Dreams 🌌</div>
+                        </div>
+
+                        <div class="polaroid" style="--rotation: 3deg;">
+                            <div class="polaroid-img-wrapper">
+                                <img src="assets/pic2.png" alt="Heart Balloon Dream">
+                            </div>
+                            <div class="polaroid-caption">Sky High Hopes 🎈</div>
+                        </div>
+
+                        <div class="polaroid" style="--rotation: -2deg;">
+                            <div class="polaroid-img-wrapper">
+                                <img src="assets/pic3.png" alt="Cozy Window Dream">
+                            </div>
+                            <div class="polaroid-caption">Warmest Thoughts ☕</div>
+                        </div>
+                    </div>
+                </div>
+
+                <button id="btn-replay" class="btn btn-secondary">
+                    <i class="fas fa-undo"></i> <span>Replay the Journey</span>
+                </button>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Canvas Confetti Library via CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
